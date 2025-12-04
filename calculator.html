@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>Pastel Purple Calculator</title>
+  <style>
+    :root {
+      --bg: #f4efff;
+      --panel: #ffffff;
+      --panel-border: #cbb6ff;
+      --display-bg: #efe6ff;
+      --display-text: #5f4785;
+      --btn-bg: #d8c6ff;
+      --btn-bg-dark: #c0a3ff;
+      --btn-text: #4b3470;
+      --btn-shadow: rgba(102, 51, 153, 0.1);
+      --accent: #a77dff;
+    }
+
+    * {
+      box-sizing: border-box;
+      font-family: "Pretendard", "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: radial-gradient(circle at top, #f8f4ff 0%, #f0e8ff 45%, #e2d9ff 100%);
+    }
+
+    .calculator {
+      width: 320px;
+      padding: 24px;
+      border-radius: 26px;
+      background: var(--panel);
+      box-shadow:
+        0 20px 40px rgba(102, 51, 153, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.6);
+      border: 2px solid var(--panel-border);
+    }
+
+    body.dark-mode {
+      background: radial-gradient(circle at top, #1f1635 0%, #1a132b 45%, #120b22 100%);
+    }
+
+    body.dark-mode .calculator {
+      background: #25193f;
+      border-color: #5b3fa3;
+      box-shadow:
+        0 20px 40px rgba(6, 0, 15, 0.8),
+        inset 0 1px 0 rgba(255, 255, 255, 0.02);
+    }
+
+    body.dark-mode .display {
+      background: #1a102f;
+      color: #f4ecff;
+      box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.6);
+    }
+
+    body.dark-mode button {
+      background: #3a2664;
+      color: #f4ecff;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.7);
+    }
+
+    body.dark-mode button.operator {
+      background: #5b3fa3;
+    }
+
+    body.dark-mode button.equal {
+      background: linear-gradient(135deg, #c29bff, #a77dff);
+    }
+
+    body.dark-mode .celebration {
+      color: #ffd166;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .theme-toggle {
+      border-radius: 999px;
+      padding: 6px 12px;
+      font-size: 0.8rem;
+      background: rgba(255, 255, 255, 0.8);
+      border: 1px solid rgba(167, 125, 255, 0.4);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .theme-toggle span {
+      font-size: 1rem;
+    }
+
+    body.dark-mode .theme-toggle {
+      background: rgba(37, 25, 63, 0.9);
+      border-color: rgba(194, 155, 255, 0.8);
+      color: #f4ecff;
+    }
+
+    .display-wrapper {
+      position: relative;
+    }
+
+    .display {
+      width: 100%;
+      height: 80px;
+      border-radius: 16px;
+      padding: 16px;
+      background: var(--display-bg);
+      color: var(--display-text);
+      text-align: right;
+      font-size: 2rem;
+      border: none;
+      box-shadow: inset 0 4px 8px rgba(102, 51, 153, 0.08);
+    }
+
+    .celebration {
+      margin-top: 8px;
+      height: 28px;
+      font-size: 1.5rem;
+      text-align: right;
+      color: var(--accent);
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .celebration.visible {
+      opacity: 1;
+    }
+
+    .keys {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    button {
+      height: 56px;
+      border: none;
+      border-radius: 16px;
+      font-size: 1.1rem;
+      color: var(--btn-text);
+      background: var(--btn-bg);
+      box-shadow: 0 6px 14px var(--btn-shadow);
+      cursor: pointer;
+      transition: transform 0.12s ease, box-shadow 0.12s ease;
+    }
+
+    button.operator {
+      background: var(--btn-bg-dark);
+      color: white;
+      font-weight: 600;
+    }
+
+    button.equal {
+      background: linear-gradient(135deg, var(--accent), #c29bff);
+      color: white;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    button.key-zero {
+      grid-column: span 2;
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 18px rgba(102, 51, 153, 0.15);
+    }
+
+    button:active {
+      transform: translateY(1px);
+      box-shadow: 0 4px 10px rgba(102, 51, 153, 0.2);
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="top-bar">
+      <button class="theme-toggle" onclick="toggleDarkMode()">
+        <span id="themeIcon">🌙</span>
+        <span id="themeLabel">다크</span>
+      </button>
+    </div>
+    <div class="display-wrapper">
+      <input type="text" id="display" class="display" value="0" readonly />
+      <div id="celebration" class="celebration" aria-live="polite"></div>
+    </div>
+
+    <div class="keys">
+      <button onclick="clearDisplay()">AC</button>
+      <button onclick="inputValue('±')">±</button>
+      <button onclick="inputValue('%')">%</button>
+      <button class="operator" onclick="inputValue('/')">÷</button>
+
+      <button onclick="inputValue('7')">7</button>
+      <button onclick="inputValue('8')">8</button>
+      <button onclick="inputValue('9')">9</button>
+      <button class="operator" onclick="inputValue('*')">×</button>
+
+      <button onclick="inputValue('4')">4</button>
+      <button onclick="inputValue('5')">5</button>
+      <button onclick="inputValue('6')">6</button>
+      <button class="operator" onclick="inputValue('-')">−</button>
+
+      <button onclick="inputValue('1')">1</button>
+      <button onclick="inputValue('2')">2</button>
+      <button onclick="inputValue('3')">3</button>
+      <button class="operator" onclick="inputValue('+')">+</button>
+
+      <button class="key-zero" onclick="inputValue('0')">0</button>
+      <button onclick="inputValue('.')">.</button>
+      <button class="equal" onclick="calculate()">=</button>
+    </div>
+  </div>
+
+  <script>
+    let expression = "0";
+    const celebrationEl = document.getElementById("celebration");
+    const themeIconEl = document.getElementById("themeIcon");
+    const themeLabelEl = document.getElementById("themeLabel");
+
+    function updateDisplay() {
+      document.getElementById("display").value = expression;
+    }
+
+    function inputValue(value) {
+      if (expression === "0" && ![".", "%"].includes(value)) {
+        expression = "";
+      }
+      if (value === "±") {
+        if (expression.startsWith("-")) {
+          expression = expression.substring(1);
+        } else {
+          expression = "-" + expression;
+        }
+      } else if (value === "%") {
+        expression = String(parseFloat(expression) / 100 || 0);
+      } else {
+        expression += value;
+      }
+      updateDisplay();
+    }
+
+    function clearDisplay() {
+      expression = "0";
+      updateDisplay();
+      toggleCelebration(false);
+    }
+
+    function calculate() {
+      try {
+        const result = eval(expression.replace(/÷/g, "/").replace(/×/g, "*"));
+        expression = String(result);
+        toggleCelebration(!isNaN(result) && Number(result) > 100);
+      } catch (e) {
+        expression = "Error";
+        toggleCelebration(false);
+      }
+      updateDisplay();
+    }
+
+    function toggleCelebration(shouldCelebrate) {
+      if (!celebrationEl) return;
+      celebrationEl.textContent = shouldCelebrate ? "🎉" : "";
+      celebrationEl.classList.toggle("visible", shouldCelebrate);
+    }
+
+    function toggleDarkMode() {
+      const isDark = document.body.classList.toggle("dark-mode");
+      if (!themeIconEl || !themeLabelEl) return;
+      if (isDark) {
+        themeIconEl.textContent = "☀️";
+        themeLabelEl.textContent = "라이트";
+      } else {
+        themeIconEl.textContent = "🌙";
+        themeLabelEl.textContent = "다크";
+      }
+    }
+  </script>
+</body>
+</html>
