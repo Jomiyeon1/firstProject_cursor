@@ -287,6 +287,74 @@
         themeLabelEl.textContent = "다크";
       }
     }
+
+    // 키보드 입력 처리 함수
+    function handleKeyPress(event) {
+      const key = event.key;
+      
+      // 숫자 키 (0-9)
+      if (key >= "0" && key <= "9") {
+        inputValue(key);
+        return;
+      }
+      
+      // 연산자 키
+      switch (key) {
+        case "+":
+          inputValue("+");
+          break;
+        case "-":
+          inputValue("-");
+          break;
+        case "*":
+          inputValue("*");
+          break;
+        case "/":
+          event.preventDefault(); // 브라우저 기본 동작(검색) 방지
+          inputValue("/");
+          break;
+        case ".":
+          inputValue(".");
+          break;
+        case "%":
+          inputValue("%");
+          break;
+        case "Enter":
+        case "=":
+          event.preventDefault();
+          calculate();
+          break;
+        case "Escape":
+        case "Delete":
+          clearDisplay();
+          break;
+        case "Backspace":
+          event.preventDefault();
+          // 마지막 문자 삭제
+          if (expression.length > 1) {
+            expression = expression.slice(0, -1);
+          } else {
+            expression = "0";
+          }
+          updateDisplay();
+          break;
+        default:
+          // 다른 키는 무시
+          return;
+      }
+    }
+
+    // 페이지 로드 시 키보드 이벤트 리스너 등록
+    document.addEventListener("DOMContentLoaded", function() {
+      // 키보드 이벤트 리스너 추가
+      document.addEventListener("keydown", handleKeyPress);
+      
+      // display 입력 필드에 포커스가 있어도 키보드 입력이 작동하도록
+      const displayEl = document.getElementById("display");
+      if (displayEl) {
+        displayEl.addEventListener("keydown", handleKeyPress);
+      }
+    });
   </script>
 </body>
 </html>
